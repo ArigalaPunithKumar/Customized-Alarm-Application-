@@ -1,0 +1,9 @@
+{
+  "name":"Alarm Studio",
+  "short_name":"Alarm Studio",
+  "start_url":"/",
+  "display":"standalone",
+  "background_color":"#f5f6fb",
+  "theme_color":"#6d5dfc",
+  "description":"A local-first responsive alarm application."
+}
