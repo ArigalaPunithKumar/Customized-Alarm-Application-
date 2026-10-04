@@ -254,17 +254,25 @@ export function AlarmProvider({ children }) {
 
   function addOrUpdateAlarm(alarm) {
     const prepared = { ...alarm, updatedAt: Date.now() };
-    let duplicateFound = false;
+    const duplicateFound = alarms.some(a =>
+      a.id !== prepared.id &&
+      a.enabled &&
+      prepared.enabled &&
+      a.time24 === prepared.time24 &&
+      a.repeat === prepared.repeat &&
+      a.date === prepared.date &&
+      JSON.stringify(a.customDays || []) === JSON.stringify(prepared.customDays || [])
+    );
+    if (duplicateFound) {
+      setToast({ type: "error", message: "An identical active alarm already exists." });
+      return;
+    }
     setAlarms(prev => {
-      duplicateFound = prev.some(a => a.id !== prepared.id && a.enabled && prepared.enabled && a.time24 === prepared.time24 && a.repeat === prepared.repeat && a.date === prepared.date && JSON.stringify(a.customDays || []) === JSON.stringify(prepared.customDays || []));
-      if (duplicateFound) return prev;
       const idx = prev.findIndex(a => a.id === prepared.id);
       if (idx < 0) return [...prev, { ...prepared, createdAt: Date.now() }];
       const next = [...prev]; next[idx] = prepared; return next;
     });
-    setToast(duplicateFound
-      ? { type: "error", message: "An identical active alarm already exists." }
-      : { type: "success", message: alarm.id ? "Alarm updated" : "Alarm created" });
+    setToast({ type: "success", message: alarm.id ? "Alarm updated" : "Alarm created" });
   }
 
   function removeAlarm(id) {
